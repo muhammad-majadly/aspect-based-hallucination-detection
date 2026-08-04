@@ -1,0 +1,15 @@
+# SummaC needs its OWN virtual environment: the `summac` package hard-pins
+# an old transformers/huggingface-hub that conflicts with the versions in
+# requirements.txt (sentence-transformers, mlx-lm, minicheck all need
+# recent transformers). Create a second venv for it:
+#
+#   python3 -m venv .venv-summac
+#   .venv-summac/bin/pip install -r requirements-summac.txt
+#   .venv-summac/bin/python3 code/run_summac.py
+#
+summac==0.0.4
+torch==2.8.0
+transformers==4.35.2
+huggingface-hub==0.17.0
+nltk==3.9.2
+numpy==2.0.2

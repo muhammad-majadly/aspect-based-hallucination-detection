@@ -1,0 +1,16 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+.venv-*/
+venv/
+
+# Secrets -- never commit
+*api_key*
+*hf_token*
+*.pem
+*.env
+credentials*
+
+# Large, regenerable model-weight caches
+ckpts/

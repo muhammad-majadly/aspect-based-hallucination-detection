@@ -1,0 +1,20 @@
+# Main environment. Covers: dataset/evaluation utilities, GPT-4-turbo /
+# GPT-4o (openai_client.py), Gemma-2-2b-it / Llama-3.2-1B (mlx-lm, Apple
+# Silicon only), "Our Model" (sentence-transformers + DeBERTa NLI +
+# scikit-learn), and MiniCheck. SummaC needs a SEPARATE environment -- see
+# requirements-summac.txt and README.md.
+numpy==2.0.2
+scipy==1.13.1
+scikit-learn==1.6.1
+joblib==1.5.3
+torch==2.8.0
+transformers==4.57.6
+sentence-transformers==5.1.2
+openai==2.48.0
+
+# Gemma-2-2b-it / Llama-3.2-1B local inference (Apple Silicon / MLX only).
+mlx==0.29.3
+mlx-lm==0.29.1
+
+# MiniCheck baseline.
+minicheck @ git+https://github.com/Liyan06/MiniCheck.git@b58b9fa69acbd1015ec970fa65dd752413a053d2

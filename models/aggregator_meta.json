@@ -1,0 +1,8 @@
+{
+  "C": 0.3,
+  "threshold": 0.56,
+  "lopo_cv_f1": 0.5033112582781457,
+  "n_train_rows": 299,
+  "n_train_papers": 17,
+  "note": "Trained on an internal 17-paper split disjoint from the released 50-paper Qwen2.5-0.5B-Instruct benchmark. See README.md for how to instead retrain directly on the benchmark's own 25 non-test papers."
+}
