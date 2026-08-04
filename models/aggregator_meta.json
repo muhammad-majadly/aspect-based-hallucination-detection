@@ -1,8 +1,7 @@
 {
   "C": 0.3,
-  "threshold": 0.56,
-  "lopo_cv_f1": 0.5033112582781457,
-  "n_train_rows": 299,
-  "n_train_papers": 17,
-  "note": "Trained on an internal 17-paper split disjoint from the released 50-paper Qwen2.5-0.5B-Instruct benchmark. See README.md for how to instead retrain directly on the benchmark's own 25 non-test papers."
+  "threshold": 0.52,
+  "lopo_cv_f1": 0.7142857142857143,
+  "n_train_rows": 449,
+  "training_composition": "299 rows from an internal 17-paper split (disjoint from the released benchmark) + 150 synthetic sentences (10 fabricated scientific passages, see data/synthetic/)"
 }

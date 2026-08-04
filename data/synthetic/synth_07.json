@@ -1,0 +1,35 @@
+{
+  "paper_title": "RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "RetroQA answers open-domain questions by dynamically adjusting the number of retrieved passages per question, using a lightweight relevance classifier to decide when enough evidence has been gathered. On Natural Questions, RetroQA improves exact-match accuracy by 4.6 points over a fixed-top-10-passage baseline while retrieving 35% fewer passages on average."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Retrieval-augmented question answering systems typically retrieve a fixed number of passages for every question, which wastes computation on easy questions and under-retrieves for questions that require synthesizing evidence from many sources."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "RetroQA retrieves passages one at a time, and after each retrieval step a lightweight classifier predicts whether the accumulated evidence is sufficient to answer the question; retrieval stops once the classifier's confidence exceeds 0.85. The relevance classifier is trained on 15,000 question-evidence-sufficiency labels."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "RetroQA improves exact-match accuracy on Natural Questions from 41.2% (fixed top-10 baseline) to 45.8%, while retrieving an average of 6.5 passages per question instead of a fixed 10, a 35% reduction. On questions requiring multi-hop reasoning, the improvement grows to 8.1 points."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Deciding retrieval depth dynamically per question improves both accuracy and retrieval efficiency compared to a fixed retrieval budget."
+      ]
+    }
+  ]
+}

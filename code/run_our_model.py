@@ -5,24 +5,29 @@ on the held-out test set.
 Default mode loads the frozen aggregator shipped in models/aggregator.joblib
 -- the exact model whose numbers are reported in the paper. Its weights,
 regularization strength (C), and decision threshold were selected via
-leave-one-paper-out cross-validation on an internal 17-paper training split
-from an earlier project iteration, disjoint from this benchmark (see
-models/aggregator_meta.json and README.md) -- that split is not released,
-so this frozen model is what makes the reported results reproducible
-without it.
+leave-one-paper-out cross-validation on the union of two training sources
+(see models/aggregator_meta.json and README.md):
+  (1) an internal 17-paper split from an earlier project iteration, disjoint
+      from this benchmark and NOT released here, and
+  (2) 150 synthetic sentences (data/synthetic/), fabricated specifically for
+      this training set with known entailed/contradicted/neutral ground
+      truth, IS released here (see generate_synthetic_data.py).
+Because (1) is not released, this frozen model is what makes the reported
+results reproducible without it.
 
 --retrain instead refits the aggregator from scratch, self-contained within
 this benchmark: it trains on the 25 non-test papers of the 50-paper dataset
 (the ones NOT in config.TEST_PAPERS) using the identical leave-one-paper-out
 C/threshold selection, then evaluates on the same 25-paper held-out test set.
+Add --include-synthetic to also add the 150 synthetic sentences to that
+training set (still fully self-contained, since both sources are released).
 This is a purely local computation (sentence-transformers + DeBERTa NLI +
-scikit-learn, no API cost) and is the RECOMMENDED way to (re)train this
-model going forward, since the training data then shares the same generator
-and paper distribution as the test set.
+scikit-learn, no API cost).
 
 Usage:
-    python run_our_model.py                 # frozen model (reproduces paper results)
-    python run_our_model.py --retrain        # retrain on the 25 non-test papers
+    python run_our_model.py                                    # frozen model (reproduces paper results)
+    python run_our_model.py --retrain                           # retrain on the 25 non-test papers
+    python run_our_model.py --retrain --include-synthetic       # + the 150 synthetic sentences
 """
 import argparse
 import csv
@@ -62,6 +67,34 @@ def compute_feature_rows(rows, manifest):
         })
         if i % 50 == 0 or i == len(rows):
             print(f"  features: {i}/{len(rows)} rows processed")
+    return out
+
+
+def load_synthetic_feature_rows():
+    """Computes features for the 150 synthetic sentences (data/synthetic/),
+    matching each sentence directly to its fabricated paper JSON rather than
+    going through manifest.py (synthetic papers aren't part of the released
+    benchmark's manifest)."""
+    synthetic_dir = config.ROOT / "data" / "synthetic"
+    csv_path = synthetic_dir / "synthetic_sentences.csv"
+    with open(csv_path, newline="") as f:
+        rows = list(csv.DictReader(f))
+
+    paper_json_cache = {}
+    out = []
+    for row in rows:
+        paper_name, aspect, sentence = row["Paper Name"], row["Aspect"], row["Sentence"]
+        if paper_name not in paper_json_cache:
+            for json_path in sorted(synthetic_dir.glob("synth_*.json")):
+                data = json.loads(json_path.read_text())
+                paper_json_cache[data["paper_title"]] = data
+        paper = paper_json_cache[paper_name]
+        features = compute_features(paper, aspect, sentence)
+        out.append({
+            "Paper Name": paper_name, "Aspect": aspect, "Sentence": sentence,
+            "Gold_Hallucination": row["Hallucination"], **features,
+        })
+    print(f"  synthetic features: {len(out)}/150 rows processed")
     return out
 
 
@@ -139,13 +172,19 @@ def run_frozen(test_rows, manifest):
     write_predictions(out_path, feature_rows, probs, preds, extra_label=f",threshold={threshold:.2f},frozen")
 
 
-def run_retrain(test_rows, all_rows, manifest):
+def run_retrain(test_rows, all_rows, manifest, include_synthetic):
     train_paper_names = {r["Paper Name"] for r in all_rows} - config.TEST_PAPERS
     train_rows_raw = [r for r in all_rows if r["Paper Name"] in train_paper_names]
     print(f"Retraining on {len(train_rows_raw)} rows / {len(train_paper_names)} non-test papers of the benchmark.")
 
     print("Extracting features for the training papers...")
     train_feature_rows = compute_feature_rows(train_rows_raw, manifest)
+
+    if include_synthetic:
+        synthetic_feature_rows = load_synthetic_feature_rows()
+        train_feature_rows = train_feature_rows + synthetic_feature_rows
+        print(f"Added 150 synthetic sentences -> {len(train_feature_rows)} total training rows.")
+
     X_train, y_train, groups_train = to_arrays(train_feature_rows)
 
     print("\n=== Selecting regularization strength C via leave-one-paper-out CV ===")
@@ -170,14 +209,16 @@ def run_retrain(test_rows, all_rows, manifest):
     preds = (probs >= threshold).astype(int)
     report(y_test, preds, "Held-out (retrained aggregator)")
 
-    out_path = config.RESULTS_DIR / "predictions_our-model-retrained.csv"
-    write_predictions(out_path, test_feature_rows, probs, preds, extra_label=f",threshold={threshold:.2f},C={best_C},retrained")
+    suffix = "-synthetic" if include_synthetic else ""
+    out_path = config.RESULTS_DIR / f"predictions_our-model-retrained{suffix}.csv"
+    write_predictions(out_path, test_feature_rows, probs, preds, extra_label=f",threshold={threshold:.2f},C={best_C},retrained{suffix}")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dataset", default=str(config.DATASET_CSV))
     parser.add_argument("--retrain", action="store_true", help="Retrain on the 25 non-test papers instead of using the shipped frozen model.")
+    parser.add_argument("--include-synthetic", action="store_true", help="With --retrain, also add the 150 synthetic sentences (data/synthetic/) to the training set.")
     args = parser.parse_args()
 
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -191,7 +232,7 @@ def main():
     print(f"Held-out test set: {len(test_rows)} rows / {len(config.TEST_PAPERS)} papers.")
 
     if args.retrain:
-        run_retrain(test_rows, matched_rows, manifest)
+        run_retrain(test_rows, matched_rows, manifest, args.include_synthetic)
     else:
         run_frozen(test_rows, manifest)
 

@@ -1,0 +1,35 @@
+{
+  "paper_title": "EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "EmoSpeech recognizes emotion from speech by jointly modeling acoustic features and the transcribed text using cross-attention between the two modalities. On the IEMOCAP benchmark, EmoSpeech achieves 74.9% weighted accuracy across 4 emotion categories, outperforming an audio-only baseline by 6.1 points."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Speech emotion recognition systems that rely solely on acoustic features miss lexical cues present in what is actually said, while text-only systems miss prosodic cues like pitch and intonation."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "EmoSpeech encodes audio with a pretrained wav2vec 2.0 model and text with a pretrained BERT encoder, then fuses the two modalities using 2 layers of cross-attention where each modality attends to the other before a final classification layer over 4 emotion categories (angry, happy, sad, neutral)."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "EmoSpeech reaches 74.9% weighted accuracy on IEMOCAP's 4-class emotion recognition task, compared to 68.8% for an audio-only baseline and 65.3% for a text-only baseline. The angry category shows the largest gain from multimodal fusion, improving by 9.4 points over the audio-only baseline."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Cross-attention fusion of acoustic and lexical information improves emotion recognition accuracy over either modality alone, with the largest gains on emotions that have strong lexical cues."
+      ]
+    }
+  ]
+}

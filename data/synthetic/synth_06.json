@@ -1,0 +1,35 @@
+{
+  "paper_title": "QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "QuantEdge is a post-training quantization method that compresses vision model weights and activations to 4 bits without any retraining, using per-channel calibration on 512 unlabeled images. QuantEdge preserves 99.1% of the original ImageNet top-1 accuracy while reducing model size by 7.2 times."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Deploying vision models on edge devices requires reducing both memory footprint and inference latency, but quantization to very low bit-widths typically causes substantial accuracy degradation, especially without expensive retraining."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "QuantEdge calibrates per-channel quantization scales for both weights and activations using 512 unlabeled calibration images, then applies a bias-correction step that adjusts each layer's output statistics to match the full-precision model. No gradient-based retraining or fine-tuning is used at any stage."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "QuantEdge quantizes ResNet-50 to 4 bits while retaining 99.1% of the original top-1 ImageNet accuracy (75.6% quantized versus 76.3% full-precision), a 7.2x reduction in model size. Without the bias-correction step, accuracy drops to 71.8%."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Per-channel calibration combined with bias correction allows 4-bit post-training quantization without any retraining, at a small accuracy cost."
+      ]
+    }
+  ]
+}

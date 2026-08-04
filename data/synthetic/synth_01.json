@@ -1,0 +1,35 @@
+{
+  "paper_title": "SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "We present SparseRoute, a mixture-of-experts transformer that routes each token to exactly 2 of 32 experts using a learned load-balancing gate. SparseRoute reduces training FLOPs by 41% relative to a dense transformer of equal parameter count while matching its perplexity on the WikiText-103 benchmark."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Dense transformers activate every parameter for every token, wasting computation on tokens that only need a small subset of the model's capacity. Prior mixture-of-experts approaches suffer from expert collapse, where a small number of experts receive most of the routed tokens."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "SparseRoute routes each token to its top-2 experts out of 32 total experts, selected by a lightweight linear gate trained jointly with the experts. An auxiliary load-balancing loss with coefficient 0.01 penalizes uneven expert usage across a training batch."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "On WikiText-103, SparseRoute reaches a validation perplexity of 18.4, within 0.2 points of a dense transformer baseline with the same parameter count, while using 41% fewer training FLOPs. Ablating the load-balancing loss increases the FLOP reduction to 55% but raises perplexity to 21.7."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "SparseRoute demonstrates that top-2 expert routing with load balancing can match dense-model quality at substantially lower training cost."
+      ]
+    }
+  ]
+}

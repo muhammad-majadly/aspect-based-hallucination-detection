@@ -1,0 +1,35 @@
+{
+  "paper_title": "EchoDiff: Diffusion Models for Text-to-Audio Synthesis",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "EchoDiff generates audio waveforms conditioned on text descriptions using a latent diffusion model with 4 denoising steps at inference time. Human evaluators preferred EchoDiff's outputs over the AudioLDM baseline in 64% of pairwise comparisons."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Text-to-audio generation must model both the acoustic content described by the text and realistic waveform-level detail. Prior diffusion-based approaches require 50 or more denoising steps at inference, making generation slow."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "EchoDiff performs diffusion in a compressed latent space produced by a pretrained audio autoencoder, and distills a 50-step teacher diffusion process down to a 4-step student using progressive distillation. Text conditioning is injected via cross-attention at every denoising step."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "In a listening study with 40 participants, EchoDiff's 4-step outputs were preferred over AudioLDM's 50-step outputs in 64% of pairwise comparisons, while generating audio 11 times faster. Objective Frechet Audio Distance was 2.1 for EchoDiff versus 2.6 for AudioLDM."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Progressive distillation to 4 denoising steps preserves and even improves perceived audio quality while greatly reducing inference cost."
+      ]
+    }
+  ]
+}

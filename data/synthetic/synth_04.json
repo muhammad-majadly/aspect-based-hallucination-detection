@@ -1,0 +1,35 @@
+{
+  "paper_title": "FewShotDet: Few-Shot Object Detection via Prototype Alignment",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "FewShotDet adapts an object detector to novel categories from just 5 labeled examples per class by aligning region features to class prototypes computed from the support set. On the PASCAL VOC few-shot split, FewShotDet improves novel-class average precision by 7.3 points over the previous best method."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Standard object detectors require thousands of labeled examples per class, but many real-world categories only have a handful of available examples. Existing few-shot detectors often overfit to the small support set and generalize poorly to query images with different viewpoints."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "FewShotDet computes a prototype embedding for each novel class by averaging region-of-interest features from 5 support examples, then aligns query region features to these prototypes using a learned metric with margin-based contrastive loss. The base detector backbone is frozen during few-shot adaptation."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "On the PASCAL VOC few-shot benchmark with 5 examples per novel class, FewShotDet achieves 46.2 average precision on novel classes, a 7.3-point improvement over the strongest prior baseline. Base-class performance drops by only 0.4 points relative to the fully-supervised detector."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Freezing the backbone and aligning region features to class prototypes prevents overfitting to the small support set while still adapting effectively to novel categories."
+      ]
+    }
+  ]
+}

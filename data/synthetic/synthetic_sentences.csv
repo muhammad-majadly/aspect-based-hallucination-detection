@@ -1,0 +1,151 @@
+Paper Name,Aspect,Sentence,Hallucination,kind
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Motivation,"Dense transformers activate all their parameters for every token, which wastes computation on tokens that only need a fraction of the model's capacity.",0,true
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Contribution,SparseRoute is a mixture-of-experts transformer that routes each token to its top-2 experts out of a pool of 32.,0,true
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Methodology,An auxiliary load-balancing loss with a coefficient of 0.01 discourages uneven expert usage across a batch.,0,true
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Main Results,SparseRoute reduces training FLOPs by 41% while reaching a validation perplexity within 0.2 points of a dense transformer baseline.,0,true
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Paper Goal,The goal of this work is to match dense-transformer quality at lower training cost via sparse expert routing.,0,true
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Motivation,Prior mixture-of-experts methods are praised in this paper for evenly distributing tokens across experts without any additional loss terms.,1,contradict
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Contribution,SparseRoute routes each token to all 32 experts simultaneously to maximize representational capacity.,1,contradict
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Methodology,"The load-balancing loss coefficient is set to 10.0, an order of magnitude larger than the expert-routing loss itself.",1,contradict
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Main Results,SparseRoute increases training FLOPs by 41% relative to a dense transformer while achieving substantially worse perplexity.,1,contradict
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Paper Goal,This paper's main goal is to show that mixture-of-experts models are strictly worse than dense transformers in every setting.,1,contradict
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Methodology,SparseRoute's gating mechanism could plausibly be extended to route based on both token identity and sequence position.,0,neutral
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Main Results,The 41% FLOP reduction reported for SparseRoute was measured using a batch size of 256 sequences.,1,neutral
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Contribution,SparseRoute's routing gate is implemented as a single linear layer followed by a softmax over the 32 experts.,0,neutral
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Main Results,SparseRoute's authors also report a 3.2x inference speedup on a single A100 GPU compared to the dense baseline.,1,neutral
+SparseRoute: Dynamic Expert Routing for Mixture-of-Experts Transformers,Motivation,Expert collapse in mixture-of-experts models has previously been linked to poor initialization of the gating network's weights.,1,neutral
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Motivation,"Computing quantum-chemical molecular properties with density functional theory is computationally expensive, motivating faster graph-based surrogates.",0,true
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Contribution,MolGraphNet uses 5 layers of edge-conditioned message passing to predict molecular properties from atomic graphs.,0,true
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Methodology,MolGraphNet is trained with the Adam optimizer at a learning rate of 5e-4 for 300 epochs.,0,true
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Main Results,"MolGraphNet achieves a mean absolute error of 0.038 eV on HOMO-LUMO gap prediction, a 12% improvement over the best prior graph-based method.",0,true
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Paper Goal,"This paper aims to improve graph neural network accuracy on quantum-chemical property prediction, specifically the HOMO-LUMO gap.",0,true
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Contribution,MolGraphNet relies on 20 layers of message passing to achieve its reported accuracy.,1,contradict
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Methodology,"MolGraphNet is trained without any gradient-based optimizer, instead using a closed-form least-squares solution.",1,contradict
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Main Results,MolGraphNet's HOMO-LUMO gap prediction error is 12% worse than the previous best graph-based method.,1,contradict
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Main Results,"On dipole moment prediction, MolGraphNet's error is dramatically higher than all prior methods.",1,contradict
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Motivation,The paper argues that density functional theory calculations are faster than any graph neural network surrogate could ever be.,1,contradict
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Methodology,The set2set readout function used in MolGraphNet could likely be replaced with a simple sum-pooling operation with modest accuracy loss.,0,neutral
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Main Results,"MolGraphNet was also evaluated on the Tox21 toxicity prediction benchmark, achieving competitive results.",1,neutral
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Contribution,MolGraphNet's edge-conditioned convolutions incorporate bond-type information as part of the edge features.,0,neutral
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Main Results,MolGraphNet's authors report that training took approximately 14 hours on a single GPU.,1,neutral
+MolGraphNet: Graph Neural Networks for Molecular Property Prediction,Motivation,"Long-range interactions between distant atoms are especially important for predicting properties of large, flexible molecules.",1,neutral
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Motivation,"Prior diffusion-based text-to-audio methods require 50 or more denoising steps, making generation slow.",0,true
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Contribution,EchoDiff distills a 50-step diffusion process down to a 4-step student model using progressive distillation.,0,true
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Methodology,Text conditioning in EchoDiff is injected via cross-attention at every denoising step.,0,true
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Main Results,"In a listening study, EchoDiff's outputs were preferred over AudioLDM's in 64% of pairwise comparisons, while being 11 times faster.",0,true
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Paper Goal,This work aims to substantially speed up diffusion-based text-to-audio generation without sacrificing perceived quality.,0,true
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Contribution,"EchoDiff requires 100 denoising steps at inference time, more than twice as many as the AudioLDM baseline.",1,contradict
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Main Results,Human evaluators preferred AudioLDM's outputs over EchoDiff's in 64% of comparisons.,1,contradict
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Main Results,"EchoDiff's Frechet Audio Distance of 2.1 is worse than AudioLDM's score of 2.6, since lower FAD is better.",1,contradict
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Methodology,EchoDiff performs diffusion directly on raw waveform samples rather than in any compressed latent space.,1,contradict
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Motivation,The paper claims that inference speed is irrelevant to the practical usefulness of text-to-audio systems.,1,contradict
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Methodology,The audio autoencoder used to produce EchoDiff's latent space was likely pretrained on a separate large audio corpus.,0,neutral
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Main Results,The listening study for EchoDiff was conducted using headphones in a soundproofed room.,1,neutral
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Contribution,Progressive distillation as used in EchoDiff was originally proposed for image diffusion models before being applied to audio.,0,neutral
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Main Results,EchoDiff also supports generating audio longer than 30 seconds without any quality degradation.,1,neutral
+EchoDiff: Diffusion Models for Text-to-Audio Synthesis,Motivation,Latent-space diffusion models are generally more memory-efficient to train than raw-waveform diffusion models.,1,neutral
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Motivation,"Standard object detectors need thousands of labeled examples per class, which is impractical for many real-world categories.",0,true
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Contribution,FewShotDet aligns region features to class prototypes computed from just 5 labeled support examples per novel class.,0,true
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Methodology,The base detector backbone in FewShotDet is kept frozen during few-shot adaptation to novel classes.,0,true
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Main Results,FewShotDet improves novel-class average precision by 7.3 points over the previous best method on the PASCAL VOC few-shot split.,0,true
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Paper Goal,The goal of FewShotDet is to adapt an object detector to novel categories using only a handful of labeled examples per class.,0,true
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Contribution,"FewShotDet requires fine-tuning the entire detector backbone on 1,000 examples per novel class.",1,contradict
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Main Results,FewShotDet's novel-class average precision is 7.3 points worse than the previous best method.,1,contradict
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Main Results,Base-class performance drops by 15 points when FewShotDet is adapted to novel categories.,1,contradict
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Methodology,FewShotDet computes class prototypes by averaging features from over 500 examples per class.,1,contradict
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Motivation,The paper argues that few-shot object detection is already a solved problem with no remaining challenges.,1,contradict
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Methodology,The margin-based contrastive loss used in FewShotDet likely has a hyperparameter controlling the margin size.,0,neutral
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Main Results,FewShotDet was also tested on the COCO few-shot benchmark with similar relative improvements.,1,neutral
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Contribution,FewShotDet's prototype alignment approach could plausibly generalize to few-shot instance segmentation as well.,0,neutral
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Main Results,FewShotDet's authors report that inference takes under 50 milliseconds per image on a modern GPU.,1,neutral
+FewShotDet: Few-Shot Object Detection via Prototype Alignment,Motivation,Novel categories in real-world applications often differ substantially in viewpoint and scale from typical training examples.,1,neutral
+ContraMed: Contrastive Pretraining for Medical Image Classification,Motivation,Labeled medical images are expensive to obtain because annotation requires expert radiologists.,0,true
+ContraMed: Contrastive Pretraining for Medical Image Classification,Contribution,ContraMed pretrains a vision encoder with contrastive learning on 2.1 million unlabeled chest X-rays.,0,true
+ContraMed: Contrastive Pretraining for Medical Image Classification,Methodology,ContraMed's contrastive pretraining uses a batch size of 1024 for 200 epochs.,0,true
+ContraMed: Contrastive Pretraining for Medical Image Classification,Main Results,"With only 500 labeled images, ContraMed matches the accuracy of a fully-supervised baseline trained on 10,000 labeled images.",0,true
+ContraMed: Contrastive Pretraining for Medical Image Classification,Paper Goal,This paper aims to reduce the amount of labeled data needed for medical image classification using self-supervised pretraining.,0,true
+ContraMed: Contrastive Pretraining for Medical Image Classification,Contribution,ContraMed pretrains its encoder using full supervision on 2.1 million labeled chest X-rays.,1,contradict
+ContraMed: Contrastive Pretraining for Medical Image Classification,Main Results,"ContraMed requires 10,000 labeled images to match the accuracy of a baseline trained on only 500 labeled images.",1,contradict
+ContraMed: Contrastive Pretraining for Medical Image Classification,Main Results,"Without contrastive pretraining, the same architecture trained on 500 labeled images reaches 95% accuracy, higher than with pretraining.",1,contradict
+ContraMed: Contrastive Pretraining for Medical Image Classification,Methodology,"ContraMed pretrains using a batch size of 8, since larger batches were found to destabilize contrastive training.",1,contradict
+ContraMed: Contrastive Pretraining for Medical Image Classification,Motivation,The paper claims that expert radiologist annotation is fast and inexpensive to obtain at scale.,1,contradict
+ContraMed: Contrastive Pretraining for Medical Image Classification,Methodology,The ResNet-50 encoder used in ContraMed could plausibly be replaced with a vision transformer backbone.,0,neutral
+ContraMed: Contrastive Pretraining for Medical Image Classification,Main Results,ContraMed was also evaluated on a tuberculosis detection dataset with similarly strong results.,1,neutral
+ContraMed: Contrastive Pretraining for Medical Image Classification,Contribution,ContraMed's contrastive loss pulls together two augmented views of the same X-ray image.,0,neutral
+ContraMed: Contrastive Pretraining for Medical Image Classification,Main Results,ContraMed's pretraining phase took approximately one week on 8 GPUs.,1,neutral
+ContraMed: Contrastive Pretraining for Medical Image Classification,Motivation,Self-supervised pretraining has also shown promise in natural image domains beyond medical imaging.,1,neutral
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Motivation,Deploying vision models on edge devices requires reducing both memory footprint and inference latency.,0,true
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Contribution,QuantEdge quantizes model weights and activations to 4 bits without any retraining.,0,true
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Methodology,QuantEdge uses 512 unlabeled images for per-channel calibration.,0,true
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Main Results,QuantEdge preserves 99.1% of the original ImageNet top-1 accuracy while reducing model size by 7.2 times.,0,true
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Paper Goal,This paper aims to achieve aggressive low-bit quantization of vision models without any retraining.,0,true
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Contribution,QuantEdge requires full retraining from scratch to reach its reported accuracy after quantization.,1,contradict
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Methodology,"QuantEdge calibrates using 500,000 labeled images rather than a small unlabeled calibration set.",1,contradict
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Main Results,QuantEdge's 4-bit model retains only 60% of the original top-1 accuracy.,1,contradict
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Main Results,"Without bias correction, QuantEdge's accuracy actually improves relative to the full method.",1,contradict
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Motivation,The paper argues that memory footprint is irrelevant for edge deployment of vision models.,1,contradict
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Methodology,The bias-correction step in QuantEdge likely operates independently on each layer of the network.,0,neutral
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Main Results,QuantEdge was also tested on a mobile object detection model with comparable compression ratios.,1,neutral
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Contribution,QuantEdge's per-channel calibration assigns a separate quantization scale to each output channel.,0,neutral
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Main Results,QuantEdge's calibration procedure takes under one minute on a single CPU core.,1,neutral
+QuantEdge: Post-Training Quantization for Edge-Deployed Vision Models,Motivation,Lower bit-widths generally reduce both memory bandwidth and energy consumption during inference.,0,neutral
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Motivation,Fixed-size passage retrieval wastes computation on easy questions and under-retrieves for questions needing many sources.,0,true
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Contribution,RetroQA dynamically decides how many passages to retrieve per question using a lightweight relevance classifier.,0,true
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Methodology,RetroQA stops retrieving once the relevance classifier's confidence exceeds 0.85.,0,true
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Main Results,RetroQA improves exact-match accuracy on Natural Questions from 41.2% to 45.8% while retrieving 35% fewer passages on average.,0,true
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Paper Goal,This paper aims to make retrieval depth adaptive per question rather than fixed for all questions.,0,true
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Contribution,RetroQA always retrieves exactly 10 passages for every question regardless of difficulty.,1,contradict
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Main Results,RetroQA's exact-match accuracy on Natural Questions drops from 45.8% down to 41.2% relative to the fixed baseline.,1,contradict
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Main Results,RetroQA retrieves 35% more passages on average than the fixed top-10 baseline.,1,contradict
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Methodology,The relevance classifier in RetroQA is trained on over 10 million labeled examples.,1,contradict
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Motivation,The paper claims multi-hop questions require no more evidence than simple single-hop questions.,1,contradict
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Methodology,The relevance classifier used by RetroQA could plausibly be a small transformer encoder.,0,neutral
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Main Results,RetroQA was also evaluated on the TriviaQA benchmark with similar efficiency gains.,1,neutral
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Contribution,RetroQA retrieves passages one at a time rather than all at once.,0,neutral
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Main Results,RetroQA's relevance classifier adds less than 5 milliseconds of latency per retrieval step.,1,neutral
+RetroQA: Retrieval-Augmented Question Answering with Dynamic Context Windows,Motivation,Multi-hop reasoning questions often require synthesizing evidence spread across multiple documents.,0,neutral
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Motivation,"Classical numerical PDE solvers must be re-run from scratch for every new set of initial conditions, which is slow for repeated solves.",0,true
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Contribution,NeuroPDE uses a Fourier neural operator with 4 spectral convolution layers to map initial conditions to PDE solutions.,0,true
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Methodology,"NeuroPDE is trained on 10,000 simulated 2D Navier-Stokes trajectories at a fixed viscosity of 1e-3.",0,true
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Main Results,NeuroPDE solves new instances 800 times faster than a classical solver while keeping relative error below 2%.,0,true
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Paper Goal,This paper aims to accelerate solving parametric PDEs by learning a neural operator instead of using classical numerical methods.,0,true
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Contribution,"NeuroPDE uses 40 spectral convolution layers, ten times more than actually reported.",1,contradict
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Main Results,NeuroPDE is 800 times slower than a classical spectral solver at producing new solutions.,1,contradict
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Main Results,NeuroPDE's relative L2 error exceeds 50% on held-out initial conditions within the training viscosity regime.,1,contradict
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Methodology,NeuroPDE was trained on real experimental fluid-dynamics measurements rather than simulated trajectories.,1,contradict
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Motivation,The paper claims classical numerical solvers are always faster than any learned neural operator.,1,contradict
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Methodology,The Fourier neural operator architecture likely leverages the fast Fourier transform for efficient spectral convolutions.,0,neutral
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Main Results,NeuroPDE was also tested on 3D Navier-Stokes simulations with comparable speedups.,1,neutral
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Contribution,NeuroPDE's training objective minimizes relative L2 error between predicted and ground-truth trajectories.,0,neutral
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Main Results,NeuroPDE's training process required approximately 48 hours on 4 GPUs.,1,neutral
+NeuroPDE: Neural Operators for Solving Parametric PDEs,Motivation,Design optimization workflows often require solving the same PDE family under many different parameter settings.,0,neutral
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Motivation,"Audio-only speech emotion systems miss lexical cues, while text-only systems miss prosodic cues like pitch and intonation.",0,true
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Contribution,EmoSpeech fuses acoustic and text features using 2 layers of cross-attention between the two modalities.,0,true
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Methodology,EmoSpeech encodes audio with a pretrained wav2vec 2.0 model and text with a pretrained BERT encoder.,0,true
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Main Results,"EmoSpeech reaches 74.9% weighted accuracy on IEMOCAP, outperforming an audio-only baseline by 6.1 points.",0,true
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Paper Goal,This paper aims to improve speech emotion recognition by jointly modeling acoustic and lexical information.,0,true
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Contribution,EmoSpeech relies exclusively on acoustic features and does not use any text encoder at all.,1,contradict
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Main Results,EmoSpeech's weighted accuracy of 74.9% is lower than the audio-only baseline's 68.8%.,1,contradict
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Main Results,"The angry emotion category shows the smallest gain from multimodal fusion, among all 4 categories.",1,contradict
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Methodology,EmoSpeech classifies emotion into 12 fine-grained categories rather than 4 broad ones.,1,contradict
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Motivation,The paper argues that prosodic cues such as pitch carry no useful information for emotion recognition.,1,contradict
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Methodology,The wav2vec 2.0 encoder used in EmoSpeech was likely pretrained on a large unlabeled speech corpus before fine-tuning.,0,neutral
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Main Results,EmoSpeech was also evaluated on the MELD dataset with consistent relative improvements.,1,neutral
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Contribution,EmoSpeech's cross-attention layers allow each modality to attend to the other before final classification.,0,neutral
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Main Results,"EmoSpeech's total parameter count is under 10 million, making it lightweight enough for mobile deployment.",1,neutral
+EmoSpeech: Multimodal Speech Emotion Recognition with Cross-Attention,Motivation,Prosodic features such as pitch and intonation are known to carry emotional information independent of word choice.,0,neutral
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Motivation,"Communication between clients and the server, not local computation, is usually the primary bottleneck in federated learning.",0,true
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Contribution,FedCompress compresses client gradient updates to 8 bits per parameter using error-feedback quantization.,0,true
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Methodology,FedCompress accumulates quantization error locally and adds it back into the next round's update.,0,true
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Main Results,FedCompress reduces total communication by 3.8 times while matching the accuracy of uncompressed federated averaging.,0,true
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Paper Goal,This paper aims to reduce the communication cost of federated learning without sacrificing model accuracy.,0,true
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Contribution,FedCompress transmits full 32-bit gradients with no compression of any kind.,1,contradict
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Main Results,"FedCompress's compressed model reaches only 50% test accuracy, far below uncompressed federated averaging.",1,contradict
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Main Results,"Without error feedback, FedCompress's accuracy actually improves relative to using error feedback.",1,contradict
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Methodology,FedCompress discards accumulated quantization error at the end of every round instead of feeding it back.,1,contradict
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Motivation,"The paper claims that client-side computation, not communication, is the dominant bottleneck in federated learning.",1,contradict
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Methodology,The 8-bit quantization scheme in FedCompress could plausibly be extended to even lower bit-widths with further error-feedback tuning.,0,neutral
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Main Results,FedCompress was also evaluated on a federated speech recognition benchmark with similar communication savings.,1,neutral
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Contribution,FedCompress's server aggregates compressed client updates using standard federated averaging.,0,neutral
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Main Results,FedCompress's 200 communication rounds took approximately 6 hours to complete in simulation.,1,neutral
+FedCompress: Communication-Efficient Federated Learning via Gradient Compression,Motivation,Clients on limited-bandwidth mobile networks are especially sensitive to the total amount of data transmitted per round.,0,neutral

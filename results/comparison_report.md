@@ -9,7 +9,8 @@
 | gpt-4o | 478 | 0.818 | 0.476 | 0.863 | 0.613 |
 | llama1b | 478 | 0.462 | 0.133 | 0.400 | 0.199 |
 | minicheck | 478 | 0.812 | 0.422 | 0.338 | 0.375 |
-| our-model | 478 | 0.799 | 0.423 | 0.550 | 0.478 |
+| our-model-retrained | 478 | 0.757 | 0.327 | 0.425 | 0.370 |
+| our-model | 478 | 0.818 | 0.465 | 0.588 | 0.519 |
 | summac | 478 | 0.730 | 0.212 | 0.225 | 0.218 |
 
 ## gemma2b by aspect
@@ -62,15 +63,25 @@
 | Motivation | 47 | 0.787 | 0.800 | 0.308 | 0.444 |
 | Paper Goal | 36 | 0.944 | 0.000 | 0.000 | 0.000 |
 
+## our-model-retrained by aspect
+
+| Aspect | N | Accuracy | Precision | Recall | F1 |
+|---|---|---|---|---|---|
+| Contribution | 108 | 0.843 | 0.621 | 0.750 | 0.679 |
+| Main Results | 150 | 0.733 | 0.207 | 0.261 | 0.231 |
+| Methodology | 137 | 0.745 | 0.242 | 0.444 | 0.314 |
+| Motivation | 47 | 0.681 | 0.333 | 0.154 | 0.211 |
+| Paper Goal | 36 | 0.750 | 0.000 | 0.000 | 0.000 |
+
 ## our-model by aspect
 
 | Aspect | N | Accuracy | Precision | Recall | F1 |
 |---|---|---|---|---|---|
-| Contribution | 108 | 0.861 | 0.714 | 0.625 | 0.667 |
-| Main Results | 150 | 0.813 | 0.429 | 0.652 | 0.517 |
-| Methodology | 137 | 0.745 | 0.207 | 0.333 | 0.255 |
-| Motivation | 47 | 0.766 | 0.583 | 0.538 | 0.560 |
-| Paper Goal | 36 | 0.806 | 0.143 | 0.500 | 0.222 |
+| Contribution | 108 | 0.870 | 0.727 | 0.667 | 0.696 |
+| Main Results | 150 | 0.827 | 0.455 | 0.652 | 0.536 |
+| Methodology | 137 | 0.759 | 0.273 | 0.500 | 0.353 |
+| Motivation | 47 | 0.745 | 0.545 | 0.462 | 0.500 |
+| Paper Goal | 36 | 0.944 | 0.500 | 0.500 | 0.500 |
 
 ## summac by aspect
 

@@ -1,0 +1,35 @@
+{
+  "paper_title": "FedCompress: Communication-Efficient Federated Learning via Gradient Compression",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "FedCompress reduces the communication cost of federated learning by compressing client gradient updates to 8 bits per parameter using error-feedback quantization before transmission to the server. Across 100 simulated clients on the CIFAR-10 federated benchmark, FedCompress reduces total communication by 3.8 times while matching the accuracy of uncompressed federated averaging."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Federated learning requires many rounds of communication between clients and a central server, and this communication cost, not local computation, is usually the primary bottleneck, especially for clients on limited bandwidth connections."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "FedCompress quantizes each client's gradient update to 8 bits per parameter before transmission, and accumulates the quantization error locally to add it back into the next round's update, preventing compression error from accumulating unboundedly across rounds. The server aggregates compressed updates using standard federated averaging."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "On the CIFAR-10 federated benchmark with 100 clients, FedCompress reaches 82.1% test accuracy after 200 communication rounds, within 0.3 points of uncompressed federated averaging (82.4%), while transmitting 3.8 times fewer bits in total. Without error feedback, accuracy drops to 76.5% due to accumulated quantization error."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Error-feedback quantization allows aggressive 8-bit gradient compression in federated learning with almost no accuracy cost, provided the accumulated quantization error is fed back into subsequent rounds."
+      ]
+    }
+  ]
+}

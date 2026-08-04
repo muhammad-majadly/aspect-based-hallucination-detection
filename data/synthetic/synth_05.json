@@ -1,0 +1,35 @@
+{
+  "paper_title": "ContraMed: Contrastive Pretraining for Medical Image Classification",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "ContraMed pretrains a vision encoder using contrastive learning on 2.1 million unlabeled chest X-ray images, then fine-tunes on a small labeled pneumonia classification dataset. ContraMed reaches 91.4% accuracy using only 500 labeled images, matching a fully-supervised baseline trained on 10,000 labeled images."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Labeled medical images are scarce and expensive to annotate, since annotation requires expert radiologists. Self-supervised pretraining on unlabeled images is a promising way to reduce the amount of labeled data needed for downstream diagnosis tasks."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "ContraMed pretrains a ResNet-50 encoder with a contrastive loss that pulls together two augmented views of the same X-ray while pushing apart views from different images, using a batch size of 1024 for 200 pretraining epochs. Fine-tuning attaches a linear classification head and updates the full network on the labeled pneumonia dataset."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "With only 500 labeled images, ContraMed's fine-tuned classifier reaches 91.4% accuracy on the held-out pneumonia test set, matching a fully-supervised ResNet-50 baseline trained on 10,000 labeled images (91.7% accuracy). Without contrastive pretraining, the same architecture trained on 500 labeled images only reaches 78.2% accuracy."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Large-scale contrastive pretraining on unlabeled chest X-rays can reduce the labeled data requirement for pneumonia classification by roughly 20-fold."
+      ]
+    }
+  ]
+}

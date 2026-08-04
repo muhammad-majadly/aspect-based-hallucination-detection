@@ -1,0 +1,35 @@
+{
+  "paper_title": "MolGraphNet: Graph Neural Networks for Molecular Property Prediction",
+  "sections": [
+    {
+      "section": "Abstract",
+      "chunks": [
+        "MolGraphNet is a graph neural network that predicts molecular properties directly from atomic graphs, using 5 message-passing layers with edge-conditioned convolutions. On the QM9 benchmark, MolGraphNet achieves a mean absolute error of 0.038 eV for HOMO-LUMO gap prediction, improving over the previous best graph-based method by 12%."
+      ]
+    },
+    {
+      "section": "Introduction",
+      "chunks": [
+        "Predicting quantum-chemical properties from molecular structure typically requires expensive density functional theory calculations. Graph neural networks offer a faster surrogate, but existing methods struggle to capture long-range interactions between distant atoms in large molecules."
+      ]
+    },
+    {
+      "section": "Methodology",
+      "chunks": [
+        "MolGraphNet represents each molecule as a graph with atoms as nodes and bonds as edges, applying 5 layers of edge-conditioned message passing followed by a set2set readout to produce a fixed-size molecular embedding. Training uses the Adam optimizer with a learning rate of 5e-4 for 300 epochs."
+      ]
+    },
+    {
+      "section": "Main Results",
+      "chunks": [
+        "MolGraphNet attains a mean absolute error of 0.038 eV on HOMO-LUMO gap prediction on QM9, a 12% improvement over the strongest prior graph-based baseline. On dipole moment prediction, MolGraphNet's error is 0.021 Debye, roughly matching the previous state of the art."
+      ]
+    },
+    {
+      "section": "Conclusion",
+      "chunks": [
+        "Edge-conditioned message passing with 5 layers is sufficient to substantially improve HOMO-LUMO gap prediction without architectural changes to capture longer-range interactions."
+      ]
+    }
+  ]
+}
