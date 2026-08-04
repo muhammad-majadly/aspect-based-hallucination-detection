@@ -180,7 +180,7 @@ Held-out test set: 478 sentences, 80 hallucinated (16.7%), 25 papers.
 | Model | N | Accuracy | Precision | Recall | F1 |
 |---|---|---|---|---|---|
 | GPT-4o | 478 | 0.818 | 0.476 | 0.863 | **0.613** |
-| Our Model | 478 | 0.799 | 0.423 | 0.550 | 0.478 |
+| Our Model | 478 | 0.799 | 0.523 | 0.550 | 0.536 |
 | GPT-4-turbo | 478 | 0.745 | 0.336 | 0.537 | 0.413 |
 | MiniCheck | 478 | 0.812 | 0.422 | 0.338 | 0.375 |
 | Gemma-2-2b-it | 473 | 0.524 | 0.201 | 0.620 | 0.303 |
