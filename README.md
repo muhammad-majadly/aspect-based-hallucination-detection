@@ -38,7 +38,7 @@ code/
   run_our_model.py                                         # our detector
   evaluate.py                                              # accuracy / precision / recall / F1
 results/
-  predictions_<model>.csv   # the actual predictions behind the numbers below
+  (created by the scripts below; not committed -- run them to regenerate predictions_<model>.csv and comparison_report.md)
 ```
 
 ## Installation
@@ -183,9 +183,7 @@ the docstrings in those two scripts.
 
 ## Running the full evaluation
 
-After running every `run_*.py` script above (or using the `results/*.csv`
-files already committed in this repo, which are exactly what produced the
-numbers below):
+After running every `run_*.py` script above:
 
 ```bash
 cd code
