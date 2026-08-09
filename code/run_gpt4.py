@@ -112,7 +112,7 @@ def run_model(client, model, by_paper, manifest):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--dataset", default=str(config.DATASET_CSV))
+    parser.add_argument("--temperature", default="0", choices=["0", "0.8"], help="Which decoding setting's rows to evaluate (0 = greedy, 0.8 = sampled).")
     parser.add_argument("--models", nargs="+", default=config.MODELS, choices=config.MODELS)
     parser.add_argument("--all-papers", action="store_true", help="Evaluate on all 50 papers instead of the 25-paper held-out test set.")
     parser.add_argument("--dry-run", action="store_true", help="Print per-paper call info and exit, without calling the API.")
@@ -121,13 +121,13 @@ def main():
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     manifest = build_manifest(config.PAPERS_DIR)
-    rows = load_dataset_rows(args.dataset)
+    rows = load_dataset_rows(config.DATASET_CSV, temperature=args.temperature)
     matched_rows, skipped_papers = resolve_matched_rows(rows, manifest)
     print_coverage_report(rows, matched_rows, skipped_papers)
 
     if not args.all_papers:
-        matched_rows = filter_to_papers(matched_rows, config.TEST_PAPERS)
-        print(f"Restricted to the {len(config.TEST_PAPERS)}-paper held-out test set: {len(matched_rows)} rows.")
+        matched_rows = filter_to_papers(matched_rows, config.test_papers_for(args.temperature))
+        print(f"Restricted to the {len(config.test_papers_for(args.temperature))}-paper held-out test set: {len(matched_rows)} rows.")
 
     by_paper = group_by_paper(matched_rows)
 

@@ -4,9 +4,15 @@ import csv
 from manifest import normalize_title
 
 
-def load_dataset_rows(csv_path):
+def load_dataset_rows(csv_path, temperature=None):
+    """Loads dataset rows, optionally restricted to one generation setting
+    via the Temperature column ("0" for greedy decoding, "0.8" for sampled
+    decoding). temperature=None loads every row in the file."""
     with open(csv_path, newline="") as f:
-        return list(csv.DictReader(f))
+        rows = list(csv.DictReader(f))
+    if temperature is None:
+        return rows
+    return [r for r in rows if r["Temperature"] == str(temperature)]
 
 
 def resolve_matched_rows(rows, manifest):

@@ -3,7 +3,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]  # .../aspect-based-hallucination-detection
 
-# Gold-labeled sentences to classify (Sentence, Paper Name, Aspect, Hallucination, ...).
+# Gold-labeled sentences to classify (Sentence, Paper Name, Aspect,
+# Hallucination, Temperature, ...). Contains two generations of the same 50
+# papers -- Temperature="0.8" (sampled decoding) and Temperature="0"
+# (greedy decoding) -- distinguished by the Temperature column; see
+# dataset_utils.load_dataset_rows(temperature=...).
 DATASET_CSV = ROOT / "data" / "dataset.csv"
 
 # Source paper JSONs, used to retrieve evidence text for each summary sentence.
@@ -29,11 +33,11 @@ TEST_PAPERS = {
     "HumanMM: Global Human Motion Recovery from Multi-shot Videos",
     "CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models",
     "Generative Inbetweening through Frame-wise Conditions-Driven Video Generation",
-    "CRISP: Object Pose and Shape Estimation with Test-Time Adaptation",
+    "How Useful is Context, Actually? Comparing LLMs and Humans on Discourse Marker Prediction",
     "ODE: Open-Set Evaluation of Hallucinations in Multimodal Large Language Models",
     "VidSeg: Training-free Video Semantic Segmentation based on Diffusion Models",
     "PlanarSplatting: Accurate Planar Surface Reconstruction in 3 Minutes",
-    "Overlooked Factors in Concept-based Explanations: Dataset Choice, Concept Learnability, and Human Capability",
+    "What does Kiki look like? Cross-modal associations between speech sounds and visual shapes in vision-and-language models",
     "LEGO-Net: Learning Regular Rearrangements of Objects in Rooms",
     "OpenScene: 3D Scene Understanding with Open Vocabularies",
     "Self-Supervised Representation Learning for CAD",
@@ -45,6 +49,41 @@ TEST_PAPERS = {
     "SkillQG: Learning to Generate Question for Reading Comprehension Assessment",
     "MINPROMPT: Graph-based Minimal Prompt Data Augmentation for Few-shot Question Answering",
 }
+
+# The 25-paper held-out test set for the temp=0.8 dataset (data/
+# dataset_temp08_full50.csv). See config.test_papers_for().
+TEST_PAPERS_TEMP08 = {
+    "3DGUT: Enabling Distorted Cameras and Secondary Rays in Gaussian Splatting",
+    "CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models",
+    "FATE: Full-head Gaussian Avatar with Textural Editing from Monocular Video",
+    "FruitNinja: 3D Object Interior Texture Generation with Gaussian Splatting",
+    "Gaussian Head Avatar: Ultra High-fidelity Head Avatar via Dynamic Gaussians",
+    "Generative Inbetweening through Frame-wise Conditions-Driven Video Generation",
+    "HRAvatar: High-Quality and Relightable Gaussian Head Avatar",
+    "How Useful is Context, Actually? Comparing LLMs and Humans on Discourse Marker Prediction",
+    "HumanMM: Global Human Motion Recovery from Multi-shot Videos",
+    "LEGO-Net: Learning Regular Rearrangements of Objects in Rooms",
+    "MINPROMPT: Graph-based Minimal Prompt Data Augmentation for Few-shot Question Answering",
+    "ODE: Open-Set Evaluation of Hallucinations in Multimodal Large Language Models",
+    "OpenScene: 3D Scene Understanding with Open Vocabularies",
+    "Revisiting Fairness in Multitask Learning: A Performance-Driven Approach for Variance Reduction",
+    "Self-Supervised Representation Learning for CAD",
+    "SinGS: Animatable Single-Image Human Gaussian Splats with Kinematic Priors",
+    "SketchAgent: Language-Driven Sequential Sketch Generation",
+    "SkillQG: Learning to Generate Question for Reading Comprehension Assessment",
+    "Squeezed Attention: Accelerating Long Context Length LLM Inference",
+    "Template Free Reconstruction of Human-object Interaction with Procedural Interaction Generation",
+    "Test-Time Visual In-Context Tuning",
+    "Towards Consistent Multi-Task Learning: Unlocking the Potential of Task-Specific Parameters",
+    "Transcribing Vocal Communications of Domestic Shiba Inu Dogs",
+    "VidSeg: Training-free Video Semantic Segmentation based on Diffusion Models",
+    "What does Kiki look like? Cross-modal associations between speech sounds and visual shapes in vision-and-language models",
+}
+
+def test_papers_for(temperature):
+    """Returns TEST_PAPERS_TEMP08 for temperature="0.8", else TEST_PAPERS."""
+    return TEST_PAPERS_TEMP08 if str(temperature) == "0.8" else TEST_PAPERS
+
 
 # GPT-4-turbo / GPT-4o baselines.
 MODELS = ["gpt-4-turbo", "gpt-4o"]

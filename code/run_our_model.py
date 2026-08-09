@@ -17,17 +17,32 @@ results reproducible without it.
 
 --retrain instead refits the aggregator from scratch, self-contained within
 this benchmark: it trains on the 25 non-test papers of the 50-paper dataset
-(the ones NOT in config.TEST_PAPERS) using the identical leave-one-paper-out
+(the ones not in the held-out test set for --temperature; see
+config.test_papers_for()) using the identical leave-one-paper-out
 C/threshold selection, then evaluates on the same 25-paper held-out test set.
 Add --include-synthetic to also add the 150 synthetic sentences to that
 training set (still fully self-contained, since both sources are released).
 This is a purely local computation (sentence-transformers + DeBERTa NLI +
-scikit-learn, no API cost).
+scikit-learn, no API cost). The validated-best configuration trains on the
+temperature=0.8 (sampled-decoding) non-test papers specifically -- pass
+--temperature 0.8 to reproduce it; the default (--temperature 0) instead
+retrains self-contained on the temperature=0 (greedy-decoding) split.
+
+--retrain uses a richer configuration than the frozen model: 19 features
+(the original 13 plus acronym_mismatch, number_overlap_evidence,
+self_reference_leak, is_question, hedge_opinion, meta_commentary -- see
+feature_extraction.py:FEATURES_13_PLUS_4_PLUS_FP) and FEATURE_TOP_K=6
+instead of 5 (RETRAIN_TOP_K above), both empirically validated to improve
+held-out F1 over the frozen model's 13-feature/top_k=5 configuration. The
+frozen model itself is untouched and always uses
+BASE_FEATURE_NAMES/FROZEN_TOP_K=5, so its reported numbers stay
+reproducible regardless of future retrain-side improvements.
 
 Usage:
-    python run_our_model.py                                    # frozen model (reproduces paper results)
-    python run_our_model.py --retrain                           # retrain on the 25 non-test papers
-    python run_our_model.py --retrain --include-synthetic       # + the 150 synthetic sentences
+    python run_our_model.py                                                    # frozen model (reproduces paper results)
+    python run_our_model.py --temperature 0.8                                  # frozen model, evaluated on the temp=0.8 test set
+    python run_our_model.py --retrain                                          # retrain, self-contained, temp=0 non-test papers
+    python run_our_model.py --retrain --include-synthetic --temperature 0.8   # validated-best configuration
 """
 import argparse
 import csv
@@ -44,13 +59,23 @@ from sklearn.preprocessing import StandardScaler
 
 import config
 from dataset_utils import filter_to_papers, load_dataset_rows, print_coverage_report, resolve_matched_rows
-from feature_extraction import FEATURE_NAMES, compute_features
+from feature_extraction import (
+    BASE_FEATURE_NAMES,
+    FEATURE_NAMES,
+    FEATURE_TOP_K,
+    FEATURES_13_PLUS_4_PLUS_FP,
+    add_duplicate_feature,
+    compute_features,
+)
+
+FROZEN_TOP_K = 5  # the frozen model was trained at this top_k -- must never change
+RETRAIN_TOP_K = 6  # validated best: +0.015 combined F1 over top_k=5
 from manifest import build_manifest, normalize_title
 
 FIELDNAMES = ["Paper Name", "Aspect", "Sentence", "Gold_Hallucination", "Predicted_Hallucination", "Raw_Model_Response"]
 
 
-def compute_feature_rows(rows, manifest):
+def compute_feature_rows(rows, manifest, top_k=FEATURE_TOP_K):
     paper_json_cache = {}
     out = []
     for i, row in enumerate(rows, 1):
@@ -60,17 +85,17 @@ def compute_feature_rows(rows, manifest):
             paper_json_cache[json_path] = json.loads(Path(json_path).read_text())
         paper = paper_json_cache[json_path]
 
-        features = compute_features(paper, aspect, sentence)
+        features = compute_features(paper, aspect, sentence, top_k=top_k)
         out.append({
             "Paper Name": paper_name, "Aspect": aspect, "Sentence": sentence,
             "Gold_Hallucination": row["Hallucination"], **features,
         })
         if i % 50 == 0 or i == len(rows):
             print(f"  features: {i}/{len(rows)} rows processed")
-    return out
+    return add_duplicate_feature(out)
 
 
-def load_synthetic_feature_rows():
+def load_synthetic_feature_rows(top_k=FEATURE_TOP_K):
     """Computes features for the 150 synthetic sentences (data/synthetic/),
     matching each sentence directly to its fabricated paper JSON rather than
     going through manifest.py (synthetic papers aren't part of the released
@@ -89,17 +114,17 @@ def load_synthetic_feature_rows():
                 data = json.loads(json_path.read_text())
                 paper_json_cache[data["paper_title"]] = data
         paper = paper_json_cache[paper_name]
-        features = compute_features(paper, aspect, sentence)
+        features = compute_features(paper, aspect, sentence, top_k=top_k)
         out.append({
             "Paper Name": paper_name, "Aspect": aspect, "Sentence": sentence,
             "Gold_Hallucination": row["Hallucination"], **features,
         })
     print(f"  synthetic features: {len(out)}/150 rows processed")
-    return out
+    return add_duplicate_feature(out)
 
 
-def to_arrays(rows):
-    X = np.array([[float(r[f]) for f in FEATURE_NAMES] for r in rows])
+def to_arrays(rows, feature_names=BASE_FEATURE_NAMES):
+    X = np.array([[float(r[f]) for f in feature_names] for r in rows])
     y = np.array([int(r["Gold_Hallucination"]) for r in rows])
     groups = np.array([r["Paper Name"] for r in rows])
     return X, y, groups
@@ -161,8 +186,12 @@ def run_frozen(test_rows, manifest):
     threshold = json.loads(meta_path.read_text())["threshold"]
 
     print("Extracting features for the held-out test set...")
-    feature_rows = compute_feature_rows(test_rows, manifest)
-    X_test, y_test, _ = to_arrays(feature_rows)
+    # Hardcoded to the frozen model's own training config (13 base features,
+    # top_k=5) regardless of RETRAIN_TOP_K / FEATURES_13_PLUS_4 above -- this
+    # must stay fixed forever, or the shipped model's reported numbers stop
+    # being reproducible.
+    feature_rows = compute_feature_rows(test_rows, manifest, top_k=FROZEN_TOP_K)
+    X_test, y_test, _ = to_arrays(feature_rows, BASE_FEATURE_NAMES)
 
     probs = model.predict_proba(X_test)[:, 1]
     preds = (probs >= threshold).astype(int)
@@ -172,20 +201,20 @@ def run_frozen(test_rows, manifest):
     write_predictions(out_path, feature_rows, probs, preds, extra_label=f",threshold={threshold:.2f},frozen")
 
 
-def run_retrain(test_rows, all_rows, manifest, include_synthetic):
-    train_paper_names = {r["Paper Name"] for r in all_rows} - config.TEST_PAPERS
+def run_retrain(test_rows, all_rows, manifest, include_synthetic, test_papers):
+    train_paper_names = {r["Paper Name"] for r in all_rows} - test_papers
     train_rows_raw = [r for r in all_rows if r["Paper Name"] in train_paper_names]
     print(f"Retraining on {len(train_rows_raw)} rows / {len(train_paper_names)} non-test papers of the benchmark.")
 
     print("Extracting features for the training papers...")
-    train_feature_rows = compute_feature_rows(train_rows_raw, manifest)
+    train_feature_rows = compute_feature_rows(train_rows_raw, manifest, top_k=RETRAIN_TOP_K)
 
     if include_synthetic:
-        synthetic_feature_rows = load_synthetic_feature_rows()
+        synthetic_feature_rows = load_synthetic_feature_rows(top_k=RETRAIN_TOP_K)
         train_feature_rows = train_feature_rows + synthetic_feature_rows
         print(f"Added 150 synthetic sentences -> {len(train_feature_rows)} total training rows.")
 
-    X_train, y_train, groups_train = to_arrays(train_feature_rows)
+    X_train, y_train, groups_train = to_arrays(train_feature_rows, FEATURES_13_PLUS_4_PLUS_FP)
 
     print("\n=== Selecting regularization strength C via leave-one-paper-out CV ===")
     best_C, best_C_f1, best_oof = None, -1.0, None
@@ -203,8 +232,8 @@ def run_retrain(test_rows, all_rows, manifest, include_synthetic):
     final_model.fit(X_train, y_train)
 
     print("\nExtracting features for the held-out test set...")
-    test_feature_rows = compute_feature_rows(test_rows, manifest)
-    X_test, y_test, _ = to_arrays(test_feature_rows)
+    test_feature_rows = compute_feature_rows(test_rows, manifest, top_k=RETRAIN_TOP_K)
+    X_test, y_test, _ = to_arrays(test_feature_rows, FEATURES_13_PLUS_4_PLUS_FP)
     probs = final_model.predict_proba(X_test)[:, 1]
     preds = (probs >= threshold).astype(int)
     report(y_test, preds, "Held-out (retrained aggregator)")
@@ -216,7 +245,7 @@ def run_retrain(test_rows, all_rows, manifest, include_synthetic):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--dataset", default=str(config.DATASET_CSV))
+    parser.add_argument("--temperature", default="0", choices=["0", "0.8"], help="Which decoding setting's rows to use for the held-out test set (and, with --retrain, for the non-test training papers too).")
     parser.add_argument("--retrain", action="store_true", help="Retrain on the 25 non-test papers instead of using the shipped frozen model.")
     parser.add_argument("--include-synthetic", action="store_true", help="With --retrain, also add the 150 synthetic sentences (data/synthetic/) to the training set.")
     args = parser.parse_args()
@@ -224,15 +253,16 @@ def main():
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     manifest = build_manifest(config.PAPERS_DIR)
-    rows = load_dataset_rows(args.dataset)
+    rows = load_dataset_rows(config.DATASET_CSV, temperature=args.temperature)
     matched_rows, skipped_papers = resolve_matched_rows(rows, manifest)
     print_coverage_report(rows, matched_rows, skipped_papers)
 
-    test_rows = filter_to_papers(matched_rows, config.TEST_PAPERS)
-    print(f"Held-out test set: {len(test_rows)} rows / {len(config.TEST_PAPERS)} papers.")
+    test_papers = config.test_papers_for(args.temperature)
+    test_rows = filter_to_papers(matched_rows, test_papers)
+    print(f"Held-out test set: {len(test_rows)} rows / {len(test_papers)} papers.")
 
     if args.retrain:
-        run_retrain(test_rows, matched_rows, manifest, args.include_synthetic)
+        run_retrain(test_rows, matched_rows, manifest, args.include_synthetic, test_papers)
     else:
         run_frozen(test_rows, manifest)
 

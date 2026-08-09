@@ -61,7 +61,7 @@ def group_by_paper(matched_rows):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", default=str(config.DATASET_CSV))
+    parser.add_argument("--temperature", default="0", choices=["0", "0.8"], help="Which decoding setting's rows to evaluate (0 = greedy, 0.8 = sampled).")
     parser.add_argument("--all-papers", action="store_true", help="Evaluate on all 50 papers instead of the 25-paper held-out test set.")
     args = parser.parse_args()
 
@@ -71,12 +71,12 @@ def main():
     out_path = config.RESULTS_DIR / "predictions_llama1b.csv"
 
     manifest = build_manifest(config.PAPERS_DIR)
-    rows = load_dataset_rows(args.dataset)
+    rows = load_dataset_rows(config.DATASET_CSV, temperature=args.temperature)
     matched_rows, skipped_papers = resolve_matched_rows(rows, manifest)
     print_coverage_report(rows, matched_rows, skipped_papers)
     if not args.all_papers:
-        matched_rows = filter_to_papers(matched_rows, config.TEST_PAPERS)
-        print(f"Restricted to the {len(config.TEST_PAPERS)}-paper held-out test set: {len(matched_rows)} rows.")
+        matched_rows = filter_to_papers(matched_rows, config.test_papers_for(args.temperature))
+        print(f"Restricted to the {len(config.test_papers_for(args.temperature))}-paper held-out test set: {len(matched_rows)} rows.")
 
     print(f"Loading {MODEL_NAME}...")
     model, tokenizer = load(MODEL_NAME)
