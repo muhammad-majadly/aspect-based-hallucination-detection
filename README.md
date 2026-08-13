@@ -17,7 +17,7 @@ actually supported by the source paper. This repo contains:
   held-out subset of that benchmark: two proprietary LLM judges
   (GPT-4-turbo, GPT-4o), two small open instruction-tuned LLMs used
   zero-shot (Gemma-2-2b-it, Llama-3.2-1B), two dedicated fact-checking tools
-  (SummaC, MiniCheck), and our own lightweight detector ("Our Model":
+  (SummaC, MiniCheck), and our own lightweight detector (SciHDC:
   sentence-similarity retrieval + NLI + a learned aggregator).
 
 ## Repository layout
@@ -28,7 +28,7 @@ data/
   papers/            # 50 source-paper JSONs (id.json), referenced by dataset.csv via manifest.py
   synthetic/          # 10 fabricated papers + 150 sentences used to augment aggregator training (see below)
 models/
-  aggregator.joblib       # frozen "Our Model" aggregator (see "Our Model" below)
+  aggregator.joblib       # frozen SciHDC aggregator (see "SciHDC" below)
   aggregator_meta.json    # its C / decision threshold / training-set composition
 code/
   config.py, manifest.py, dataset_utils.py, evidence.py   # shared utilities
@@ -36,7 +36,8 @@ code/
   generate_synthetic_data.py                               # (re)generates data/synthetic/
   run_gpt4.py, run_gemma.py, run_llama.py                 # LLM-judge baselines
   run_summac.py, run_minicheck.py                         # fact-checking-tool baselines
-  run_our_model.py                                         # our detector
+  run_our_model.py                                         # SciHDC (our detector)
+  run_correction.py, evaluate_correction.py                # hallucination correction + its LLM-judge evaluation
   evaluate.py                                              # accuracy / precision / recall / F1
 results/
   (created by the scripts below; not committed -- run them to regenerate predictions_<model>.csv and comparison_report.md)
@@ -138,9 +139,9 @@ Each script writes `results/predictions_<model>.csv` (or reuses/extends it
 if partially done -- every script is resumable), so rename the output file
 between the two `--temperature` runs before combining them.
 
-## "Our Model": frozen aggregator, synthetic augmentation, and retraining
+## SciHDC: frozen aggregator, synthetic augmentation, and retraining
 
-"Our Model" is a logistic-regression aggregator over similarity/NLI/lexical
+SciHDC is a logistic-regression aggregator over similarity/NLI/lexical
 features (see `code/feature_extraction.py`), replacing a hand-tuned decision
 rule. `run_our_model.py` has two modes, which use different feature sets:
 
@@ -187,13 +188,47 @@ We also confirmed the synthetic sentences alone (no real training data)
 reach only F1=0.447, and the real 17-paper split alone reaches F1=0.478 --
 the two sources are complementary; neither alone matches their combination.
 
+## Hallucination correction
+
+`run_correction.py` implements the paper's correction step (Section 3.2.4):
+given a sentence flagged as hallucinated, retrieve the highest-confidence
+*contradicting* evidence window if one clears
+`config.MIN_CONTRADICTION_CONFIDENCE`, else fall back to the single most
+similar retrieved window, and prompt GPT-4o to produce a corrected sentence
+grounded in that evidence.
+
+```bash
+cd code
+python run_our_model.py --retrain --include-synthetic --temperature 0.8   # produces results/predictions_our-model-retrained-synthetic.csv
+OPENAI_API_KEY=$(cat api_key.txt) python run_correction.py --predictions predictions_our-model-retrained-synthetic.csv
+OPENAI_API_KEY=$(cat api_key.txt) python evaluate_correction.py
+```
+
+`evaluate_correction.py` scores each correction with an independent GPT-4o
+judge on four aspects (1-5): **faithfulness** (grounded in the evidence),
+**fluency** (well-formed English), **relevance** (same claim as the
+original sentence), and **adequacy** (actually fixes the flagged error).
+On the 40 true-positive catches across the 5 held-out test papers where
+SciHDC detects best (Gaussian Head Avatar, SketchAgent, LEGO-Net,
+HumanMM, and Towards Consistent Multi-Task Learning; per-paper F1 0.71-0.95),
+this scores faithfulness 4.40/5 and fluency 5.00/5 (both near-ceiling), but
+relevance 3.38/5 and adequacy 3.35/5 -- a manual pass separately judges
+31/40 (77.5%) of these same corrections as faithful, on-topic, and
+error-resolving. Both evaluations agree the main failure mode is the same:
+when the single closest retrieved evidence window is only topically
+related to the flagged sentence rather than a direct rebuttal of its
+specific claim, the correction drifts onto a different claim instead of
+either fixing the original one or explicitly saying it's unsupported
+(which it does successfully in a number of cases). See the paper's Section
+5.3 and Case Study section for the full discussion and a worked example.
+
 ## Optional aspect-to-section evidence mapping
 
 `code/evidence.py` implements a fixed aspect -> section mapping (e.g.
 Methodology -> everything after Related Work). It is **disabled by default**
 (`config.USE_ASPECT_MAPPING = False`): the final experiments retrieve
 evidence from the *full* paper text for GPT-4-turbo, GPT-4o, Gemma-2-2b-it,
-Llama-3.2-1B, and "Our Model"'s retrieval step. `run_summac.py` and
+Llama-3.2-1B, and SciHDC's retrieval step. `run_summac.py` and
 `run_minicheck.py` are a deliberate, documented exception -- they call
 `evidence.get_evidence()` directly regardless of this flag, because their
 NLI/fact-checking backends are intractably slow against a full paper; see
@@ -219,15 +254,15 @@ Held-out test set, combined across both decoding settings: 873 sentences,
 | Model | N | Accuracy | Precision | Recall | F1 |
 |---|---|---|---|---|---|
 | GPT-4o | 873 | 0.780 | 0.492 | 0.845 | **0.622** |
-| Our Model (retrained, self-contained) | 873 | 0.790 | 0.508 | 0.701 | 0.589 |
+| SciHDC (retrained, self-contained) | 873 | 0.790 | 0.508 | 0.701 | 0.589 |
 | GPT-4-turbo | 873 | 0.742 | 0.445 | 0.818 | 0.576 |
 | MiniCheck | 873 | **0.804** | 0.540 | 0.572 | 0.556 |
-| Our Model (frozen, shipped) | 873 | 0.759 | 0.450 | 0.556 | 0.498 |
+| SciHDC (frozen, shipped) | 873 | 0.759 | 0.450 | 0.556 | 0.498 |
 | SummaC-ZS | 873 | 0.734 | 0.397 | 0.465 | 0.429 |
 | Llama-3.2-1B | 873 | 0.494 | 0.206 | 0.476 | 0.287 |
 | Gemma-2-2b-it | 858 | 0.566 | 0.221 | 0.400 | 0.285 |
 
-GPT-4o has the strongest overall F1; **Our Model's self-contained retrain
+GPT-4o has the strongest overall F1; **SciHDC's self-contained retrain
 has the second-highest F1**, ahead of GPT-4-turbo and every other baseline,
 and the second-highest accuracy (behind only MiniCheck), while using
 retrieval and NLI backbones (`sentence-transformers/all-mpnet-base-v2`,
