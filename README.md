@@ -204,17 +204,20 @@ OPENAI_API_KEY=$(cat api_key.txt) python run_correction.py --predictions predict
 OPENAI_API_KEY=$(cat api_key.txt) python evaluate_correction.py
 ```
 
-`evaluate_correction.py` scores each correction with an independent GPT-4o
+`evaluate_correction.py` scores each correction with an independent LLM
 judge on four aspects (1-5): **faithfulness** (grounded in the evidence),
 **fluency** (well-formed English), **relevance** (same claim as the
 original sentence), and **adequacy** (actually fixes the flagged error).
-On the 40 true-positive catches across the 5 held-out test papers where
-SciHDC detects best (Gaussian Head Avatar, SketchAgent, LEGO-Net,
-HumanMM, and Towards Consistent Multi-Task Learning; per-paper F1 0.71-0.95),
-this scores faithfulness 4.40/5 and fluency 5.00/5 (both near-ceiling), but
-relevance 3.38/5 and adequacy 3.35/5 -- a manual pass separately judges
-31/40 (77.5%) of these same corrections as faithful, on-topic, and
-error-resolving. Both evaluations agree the main failure mode is the same:
+The judge must be a different model from the corrector (GPT-4o) to avoid
+a same-model grader-generator conflict of interest; the numbers below use
+Claude Sonnet 5 as judge. On the 40 true-positive catches across the 5
+held-out test papers where SciHDC detects best (Gaussian Head Avatar,
+SketchAgent, LEGO-Net, HumanMM, and Towards Consistent Multi-Task
+Learning; per-paper F1 0.71-0.95), this scores faithfulness 4.78/5 and
+fluency 4.95/5 (both near-ceiling), but relevance 3.73/5 and adequacy
+3.55/5 -- a manual pass separately judges 31/40 (77.5%) of these same
+corrections as faithful, on-topic, and error-resolving. Both evaluations
+agree the main failure mode is the same:
 when the single closest retrieved evidence window is only topically
 related to the flagged sentence rather than a direct rebuttal of its
 specific claim, the correction drifts onto a different claim instead of
